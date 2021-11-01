@@ -1,17 +1,18 @@
 package com.sy.tests.versionapi;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
-import java.util.Properties;
-import java.util.jar.Manifest;
 
 @RestController
 public class VersionController {
     @GetMapping("/ver")
     public VersionInfo version(){
-        return readVersionInfoInManifest(); }
+        return readVersionInfoInManifest();
+    }
 
     public VersionInfo readVersionInfoInManifest(){
         VersionInfo object = new VersionInfo();
@@ -28,6 +29,25 @@ public class VersionController {
         System.out.println("Package version: " + object.ImplementationVersion);
         System.out.println("Package vendor: " + object.Vendor);
         return object;
+    }
+
+//use BuildProperties with spring-boot-maven-plugin
+    @Autowired
+    BuildProperties buildProperties;
+
+    @GetMapping("/buildinfo")
+    public VersionInfo getBuildInfo(){
+        VersionInfo ver = new VersionInfo();
+        ver.Name = buildProperties.getName();
+        // Artifact version
+        ver.ArtifactVersion = buildProperties.getVersion();
+// Date and Time of the build
+        ver.ArtifactTime = buildProperties.getTime();
+// Artifact ID from the pom file
+        ver.ArtifactID = buildProperties.getArtifact();
+// Group ID from the pom file
+        ver.ArtifactGroup = buildProperties.getGroup();
+        return ver;
     }
 
 //    public void readVersionThroughProperties() throws IOException {
